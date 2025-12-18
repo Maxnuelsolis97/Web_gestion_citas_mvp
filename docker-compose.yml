@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16.1
+    container_name: citas_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-citasdb}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - citas_pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - citas_net
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: citas_api
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    environment:
+      # Puerto interno fijo (Azure y Docker friendly)
+      PORT: 3000
+
+      # Conexión a DB (en docker, el host es el nombre del servicio)
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME:-citasdb}
+
+      # JWT (ajusta tus nombres reales si en tu código son distintos)
+      JWT_SECRET: ${JWT_SECRET:-cambia_esto_en_prod}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+
+    ports:
+      - "3000:3000"
+    networks:
+      - citas_net
+
+volumes:
+  citas_pgdata:
+
+networks:
+  citas_net:
+    driver: bridge
