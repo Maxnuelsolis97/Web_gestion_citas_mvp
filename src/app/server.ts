@@ -1,31 +1,49 @@
 import express from "express";
+import cors from "cors";
+
 import authRoutes from "./routes/authRoutes";
 import appointmentRoutes from "./routes/appointmentRoutes";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
+
+/* =========================
+   MIDDLEWARES (ORDEN CLAVE)
+   ========================= */
+
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:3000"
+  ],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
 app.use(express.json());
 
-//Rutas
-import userRoutes from "./routes/userRoutes";
-app.use("/users", userRoutes);
-
-app.use("/appointments", appointmentRoutes);
+/* =========================
+   RUTAS
+   ========================= */
 
 app.use("/auth", authRoutes);
-// Endpoint de prueba
+app.use("/users", userRoutes);
+app.use("/appointments", appointmentRoutes);
+
 app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
+  res.status(200).json({ status: "ok" });
 });
+
+app.get("/", (_req, res) => {
+  res.status(200).send("API Citas Backend OK");
+});
+
+/* =========================
+   SERVER
+   ========================= */
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`API escuchando en el puerto ${PORT}`);
-});
-app.get("/", (req, res) => {
-  res.status(200).send("API Citas Backend OK");
-});
-
-app.get("/health", (req, res) => {
-  res.status(200).json({ status: "ok" });
 });
