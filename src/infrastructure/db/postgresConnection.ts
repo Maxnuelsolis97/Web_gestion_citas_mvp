@@ -1,11 +1,14 @@
 import { Pool } from "pg";
 
+const sslEnabled = process.env.DB_SSL === "true";
+
 const pool = new Pool({
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  ssl: sslEnabled ? { rejectUnauthorized: false } : undefined,
 });
 
 // CLAVE: para que "usuario" apunte a "citas.usuario"
