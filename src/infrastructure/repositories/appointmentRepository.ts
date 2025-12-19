@@ -55,28 +55,6 @@ export const appointmentRepository = {
     return result.rows[0] ?? null;
   },
 
-  async reschedule(citaId: number, pacienteId: number, nuevaFechaHora: string) {
-    const result = await query(
-      `
-      UPDATE citas.cita
-      SET fecha_hora = $1, updated_at = now()
-      WHERE id = $2 AND paciente_id = $3
-      RETURNING id, paciente_id, medico_id, especialidad_id, fecha_hora, motivo, estado
-      `,
-      [nuevaFechaHora, citaId, pacienteId]
-    );
-    return result.rows[0];
-  },
-
-  async cancel(citaId: number, pacienteId: number) {
-    await query(
-      `
-      UPDATE citas.cita
-      SET estado = 'CANCELADA', updated_at = now()
-      WHERE id = $1 AND paciente_id = $2
-      `,
-      [citaId, pacienteId]
-    );
-  },
+  
 
 };
