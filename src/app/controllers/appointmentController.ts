@@ -6,7 +6,11 @@ import { listAppointments } from "../../domain/usecases/listAppointments";
 export const createAppointmentController = async (req: Request, res: Response) => {
   try {
     const userToken = (req as any).user;
-    const pacienteId = userToken.userId as number;
+    const pacienteId = Number(userToken?.id ?? userToken?.userId);
+
+  if (!pacienteId) {
+  return res.status(401).json({ error: "No autenticado: token inválido" });
+}
 
     const { medicoId, especialidadId, fechaHora, motivo } = req.body;
 
