@@ -7,11 +7,15 @@ RUN npm ci
 # ====== 2) Build (compila TS a dist/)
 FROM node:20-alpine AS build
 WORKDIR /app
+COPY package*.json ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY tsconfig*.json ./
 COPY src ./src
+
+
 # si tienes server.ts en raíz, descomenta la línea siguiente:
 # COPY server.ts ./server.ts
+
 RUN npm run build
 
 # ====== 3) Runtime (solo prod deps + dist)
