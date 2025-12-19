@@ -1,10 +1,18 @@
 import { Router } from "express";
-import { scheduleAppointmentController } from "../controllers/appointmentController";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import {
+  createAppointmentController,
+  listAppointmentsController,
+  rescheduleAppointmentController,
+  cancelAppointmentController,
+} from "../controllers/appointmentController";
 
 const router = Router();
 
-// Todas las rutas de citas requieren estar logueado
-router.post("/", authMiddleware, scheduleAppointmentController);
+// Todas requieren login
+router.post("/", authMiddleware, createAppointmentController);
+router.get("/", authMiddleware, listAppointmentsController);
+router.put("/:id/reschedule", authMiddleware, rescheduleAppointmentController);
+router.delete("/:id", authMiddleware, cancelAppointmentController);
 
 export default router;

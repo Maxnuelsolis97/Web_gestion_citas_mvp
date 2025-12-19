@@ -1,37 +1,44 @@
 import { appointmentRepository } from "../../infrastructure/repositories/appointmentRepository";
 
-export const scheduleAppointment = async (data: {
+function parseISOOrThrow(value: string): Date {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) throw new Error("La fecha de la cita no es válida (ISO).");
+  return d;
+}
+
+function mustBeAtLeast3DaysBefore(fechaCita: Date) {
+  const now = new Date();
+  const diffMs = fechaCita.getTime() - now.getTime();
+  const diffDays = diffMs / (1000 * 60 * 60 * 24);
+  if (diffDays < 3) {
+    throw new Error("Solo se permite con mínimo 3 días de anticipación.");
+  }
+}
+
+export async function scheduleAppointment(input: {
   pacienteId: number;
   medicoId: number;
   especialidadId: number;
-  fechaHora: string; // ISO
+  fechaHora: string;
   motivo?: string;
-}) => {
-  const { pacienteId, medicoId, especialidadId, fechaHora, motivo } = data;
+}) {
+  const fecha = parseISOOrThrow(input.fechaHora);
 
-  const fecha = new Date(fechaHora);
-  if (isNaN(fecha.getTime())) {
-    throw new Error("La fecha de la cita no es válida");
+  // Debe ser futura
+  if (fecha.getTime() <= Date.now()) {
+    throw new Error("La fecha de la cita debe ser futura.");
   }
 
-  const now = new Date();
-  if (fecha <= now) {
-    throw new Error("La cita debe ser en una fecha y hora futura");
+
+  const count = await appointmentRepository.countProgramadasByPaciente(input.pacienteId);
+  if (count >= 2) {
+    throw new Error("El paciente ya tiene 2 citas PROGRAMADAS. No puede agendar más.");
   }
 
-  const activeAppointments =
-    await appointmentRepository.findActiveByPatient(pacienteId);
-  if (activeAppointments.length > 0) {
-    throw new Error("Ya tienes una cita activa");
-  }
+  return appointmentRepository.create(input);
+}
 
-  const cita = await appointmentRepository.create({
-    pacienteId,
-    medicoId,
-    especialidadId,
-    fechaHora,
-    motivo
-  });
-
-  return cita;
-};
+export function validarCambioConAnticipacion(fechaHoraISO: string) {
+  const fecha = parseISOOrThrow(fechaHoraISO);
+  mustBeAtLeast3DaysBefore(fecha);
+}

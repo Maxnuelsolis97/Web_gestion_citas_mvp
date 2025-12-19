@@ -1,30 +1,14 @@
-import bcrypt from "bcryptjs";
 import { userRepository } from "../../infrastructure/repositories/userRepository";
 
-export const registerUser = async (data: {
-  nombre: string;
-  apellido: string;
-  email: string;
-  dni: string;
-  password: string;
-}) => {
-  const { nombre, apellido, email, dni, password } = data;
+export const registerUser = async (data: any) => {
+  const { nombre, apellido, email, dni, celular, password } = data;
 
-  // Verificar si existe correo
-  const exists = await userRepository.findByEmail(email);
-  if (exists) {
-    throw new Error("El correo ya está registrado");
+  if (!nombre || !apellido || !email || !dni || !password) {
+    throw new Error("Faltan campos obligatorios");
   }
 
-  // Encriptar contraseña
-  const hashed = await bcrypt.hash(password, 10);
+  const exists = await userRepository.findByEmail(email);
+  if (exists) throw new Error("El correo ya está registrado");
 
-  // Registrar en BD
-  return await userRepository.create({
-    nombre,
-    apellido,
-    email,
-    dni,
-    password_hash: hashed
-  });
+  return await userRepository.create({ nombre, apellido, email, dni, celular, password });
 };

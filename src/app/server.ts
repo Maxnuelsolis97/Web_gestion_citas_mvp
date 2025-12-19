@@ -22,3 +22,10 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`API escuchando en el puerto ${PORT}`);
 });
+app.get("/", (req, res) => {
+  res.status(200).send("API Citas Backend OK");
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
