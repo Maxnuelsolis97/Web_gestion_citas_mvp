@@ -78,18 +78,5 @@ export const appointmentRepository = {
       [citaId, pacienteId]
     );
   },
-    async countProgramadasByPaciente(pacienteId: number): Promise<number> {
-    const result = await query(
-      `
-      SELECT COUNT(*)::int AS count
-      FROM citas.cita
-      WHERE paciente_id = $1
-        AND estado = 'PROGRAMADA'
-      `,
-      [pacienteId]
-    );
-
-    return result.rows[0]?.count ?? 0;
-  },
 
 };

@@ -30,11 +30,6 @@ export async function scheduleAppointment(input: {
   }
 
 
-  const count = await appointmentRepository.countProgramadasByPaciente(input.pacienteId);
-  if (count >= 2) {
-    throw new Error("El paciente ya tiene 2 citas PROGRAMADAS. No puede agendar más.");
-  }
-
   return appointmentRepository.create(input);
 }
 
