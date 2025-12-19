@@ -16,7 +16,7 @@ COPY src ./src
 # si tienes server.ts en raíz, descomenta la línea siguiente:
 # COPY server.ts ./server.ts
 
-RUN npm run build
+# RUN npm run build
 
 # ====== 3) Runtime (solo prod deps + dist)
 FROM node:20-alpine AS runner
