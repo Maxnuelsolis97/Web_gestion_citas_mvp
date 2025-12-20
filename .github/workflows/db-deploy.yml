@@ -1,0 +1,41 @@
+name: DB Deploy (Neon)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+    paths:
+      - "db/**"
+      - ".github/workflows/db-deploy.yml"
+
+jobs:
+  deploy-db:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install psql client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Run DDL (schema/tables/indexes/constraints)
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL_ADMIN }}
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/01_ddl_schema.sql
+
+      - name: Run DML (seed)
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL_ADMIN }}
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f db/02_dml_seed.sql
+
+      - name: Run DCL (create app_user + grants)
+        env:
+          DATABASE_URL: ${{ secrets.NEON_DATABASE_URL_ADMIN }}
+          APP_PASS: ${{ secrets.DB_APP_PASSWORD }}
+        run: |
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -v APP_PASS="$APP_PASS" -f db/03_dcl_roles.sql

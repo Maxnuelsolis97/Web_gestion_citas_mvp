@@ -46,7 +46,7 @@ CREATE TABLE cita (
   estado          VARCHAR(20) NOT NULL DEFAULT 'PROGRAMADA',
 
   -- Ya NO lo usan: lo dejamos NULLABLE para evitar errores.
-  codigo_pago     CHAR(5) NULL,
+  codigo_pago     CHAR(5),
 
   motivo          VARCHAR(255),
   created_at      TIMESTAMP NOT NULL DEFAULT NOW(),
