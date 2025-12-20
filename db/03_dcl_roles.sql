@@ -1,17 +1,19 @@
 -- db/03_dcl_roles.sql
--- DCL: crear app_user + permisos (sin DO $$, usando \gexec)
+-- DCL: crear app_user + permisos (robusto con password numérico)
 
 BEGIN;
 
--- 1) Crear rol app_user solo si NO existe
+-- Crear role solo si no existe (usando SQL generado y ejecutado)
 SELECT
-  'CREATE ROLE app_user LOGIN PASSWORD ' || :'APP_PASS' || ';'
+  'CREATE ROLE app_user LOGIN PASSWORD '
+  || quote_literal(replace(:'APP_PASS', '''', ''''''))
+  || ';'
 WHERE NOT EXISTS (
   SELECT 1 FROM pg_roles WHERE rolname = 'app_user'
 )
 \gexec
 
--- 2) Permisos mínimos (principio de menor privilegio)
+-- Permisos mínimos
 GRANT CONNECT ON DATABASE current_database() TO app_user;
 GRANT USAGE ON SCHEMA citas TO app_user;
 
