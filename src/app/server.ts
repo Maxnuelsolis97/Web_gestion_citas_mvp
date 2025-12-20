@@ -33,6 +33,10 @@ const corsOptions: CorsOptions = {
   allowedHeaders: ["Content-Type", "Authorization", "Accept", "Origin"],
 };
 
+app.use((req, res, next) => {
+  res.setHeader("X-BUILD-MARK", "cors-v3");
+  next();
+});
 
 // IMPORTANTE: primero CORS, luego JSON, luego rutas
 app.use(cors(corsOptions));
