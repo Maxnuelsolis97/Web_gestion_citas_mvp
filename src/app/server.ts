@@ -20,21 +20,19 @@ const allowedOrigins = new Set([
 
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    // origin puede ser undefined en herramientas tipo curl/postman
     if (!origin) return callback(null, true);
 
-    // Permitir lista exacta
-    if (allowedOrigins.has(origin)) return callback(null, true);
-
-    // Permitir cualquier Static Web Apps (útil si Azure te da preview URLs)
-    if (origin.endsWith(".azurestaticapps.net")) return callback(null, true);
+    if (allowedOrigins.has(origin) || origin.endsWith(".azurestaticapps.net")) {
+      // OJO: devolver el origin explícito
+      return callback(null, origin);
+    }
 
     return callback(new Error(`CORS blocked for origin: ${origin}`));
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 204,
+  allowedHeaders: ["Content-Type", "Authorization", "Accept", "Origin"],
 };
+
 
 // IMPORTANTE: primero CORS, luego JSON, luego rutas
 app.use(cors(corsOptions));
