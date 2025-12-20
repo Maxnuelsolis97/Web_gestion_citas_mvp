@@ -14,7 +14,8 @@ const app = express();
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "http://localhost:3000"
+    "http://localhost:3000",
+    "https://ambitious-plant-0a172de0f.2.azurestaticapps.net",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
