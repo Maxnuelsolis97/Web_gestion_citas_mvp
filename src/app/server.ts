@@ -47,7 +47,7 @@ app.use(express.json());
 // Rutas
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
-app.use("/appointment", appointmentRoutes);
+app.use("/appointments", appointmentRoutes);
 
 // Healthchecks
 app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
