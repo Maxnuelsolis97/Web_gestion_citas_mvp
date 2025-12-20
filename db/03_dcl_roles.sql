@@ -1,21 +1,17 @@
 -- db/03_dcl_roles.sql
+-- DCL: crear app_user + permisos (sin DO $$, usando \gexec)
+
 BEGIN;
 
--- Crear usuario de aplicación (no admin)
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT FROM pg_roles WHERE rolname = 'app_user'
-  ) THEN
-    EXECUTE format(
-      'CREATE ROLE app_user LOGIN PASSWORD %L;',
-      :'APP_PASS'
-    );
-  END IF;
-END
-$$;
+-- 1) Crear rol app_user solo si NO existe
+SELECT
+  'CREATE ROLE app_user LOGIN PASSWORD ' || :'APP_PASS' || ';'
+WHERE NOT EXISTS (
+  SELECT 1 FROM pg_roles WHERE rolname = 'app_user'
+)
+\gexec
 
--- Permisos mínimos (principio de menor privilegio)
+-- 2) Permisos mínimos (principio de menor privilegio)
 GRANT CONNECT ON DATABASE current_database() TO app_user;
 GRANT USAGE ON SCHEMA citas TO app_user;
 
