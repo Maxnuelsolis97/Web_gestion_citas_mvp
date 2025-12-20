@@ -38,7 +38,7 @@ const corsOptions: CorsOptions = {
 
 // IMPORTANTE: primero CORS, luego JSON, luego rutas
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // <- responde preflight
+app.options(/.*/, cors(corsOptions)); // <- responde preflight
 
 app.use(express.json());
 
