@@ -16,7 +16,7 @@ const allowedOrigins = new Set([
   "http://localhost:5173",
   "http://localhost:3000",
   "https://ambitious-plant-0a172de0f.2.azurestaticapps.net",
-  "https://citas-backend-mvp1-a6cnesfbadhzckhu.brazilsouth-01.azurewebsites.net"
+   "https://ashy-pebble-037f1080f.4.azurestaticapps.net"
 ]);
 
 const corsOptions: CorsOptions = {
